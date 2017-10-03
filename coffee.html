@@ -14,16 +14,22 @@
         The best coffee near you
       </div>
 
-      <div class="col-lg-12 coffeSortBy">
+      <div class="col-lg-6 coffeSortBy">
         Sort by:
       </div>
 
-      <div class="col-lg-6 bg-success" align="right">
-        <button class="btn btn-default" type="submit">Distance</button>
+      <div class="col-lg-6 coffeSortBy">
+        Maximum distance:
       </div>
 
-      <div class="col-lg-6 bg-warning" align="left">
-        <button class="btn btn-default" type="submit">Price</button>
+      <div class="col-lg-6" align="center">
+        <button class="btn btn-default" onclick="onSortClick('distance')" type="submit">Distance</button>
+        <button class="btn btn-default" onclick="onSortClick('price')" type="submit">Price</button>
+      </div>
+
+      <div class="col-lg-6" align="center">
+        <input type="number" id="maxdistance">
+        <button class="btn btn-default" onclick="onSetDistance()" type="submit">Submit</button>
       </div>
 
     </div>

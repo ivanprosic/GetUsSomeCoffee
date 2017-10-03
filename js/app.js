@@ -1,26 +1,26 @@
 var coffeShops;
+var clientId = 'MAZ2HDYFRUBAE25PQQEUIY0XCEE1SZH1Q55MZAFL4CVRZIJL';
+var clientSecret = 'VW44SF5S2MQZ3CEH4MAZ4FJNNVR5LH4IIPBQZJK1GLO335O5';
+var sort = 'distance';
+var distance = 2000;
+
+document.getElementById("maxdistance").value = 2000;
 
 window.onload = function(){
-  handleCoffeeShops('distance');
+  handleCoffeeShops();
 };
 
-function handleCoffeeShops(sortBy){
-
-    if(!coffeShops){
+function handleCoffeeShops(){
       getLocation(function(err, lat, lon){
-        console.log(lat + ',' + lon);
+        // console.log(lat + ',' + lon);
         if(err){console.log("Failed to get location."); return;}
         getCoffeeShops(lat, lon, function(err,list){
           if(err){console.log("Failed to get coffe shop list."); return;}
           //console.log(list);
           coffeShops = list;
-          renderCoffeShops(sortBy);
+          renderCoffeShops(sort);
         });
       });
-    }
-    else{
-      renderCoffeShops(sortBy);
-    }
 }
 
 function getLocation(callback) {
@@ -38,8 +38,8 @@ function getCoffeeShops(lat, lon, callback){
   var xhr = new XMLHttpRequest();
   var url = 'https://api.foursquare.com/v2/venues/explore';
   var data = {
-    client_id: 'SJ2TQJO22BOKXRHPZMS2H14KBCS4YPHNDW0OH31BCMA1OQZO',
-    client_secret: 'QADKI0PMPGWWBHBXSTMXPLZEYKO1HKGM5ODVUMBHIR2DM1BA',
+    client_id: clientId,
+    client_secret: clientSecret,
     v: '20170801',
     ll: lat+',' + lon,
     query: 'coffee',
@@ -72,8 +72,8 @@ function getPhoto(venueID, callback){
   var url = 'https://api.foursquare.com/v2/venues/' + venueID + '/photos';
 
   var data = {
-    client_id: 'SJ2TQJO22BOKXRHPZMS2H14KBCS4YPHNDW0OH31BCMA1OQZO',
-    client_secret: 'QADKI0PMPGWWBHBXSTMXPLZEYKO1HKGM5ODVUMBHIR2DM1BA',
+    client_id: clientId,
+    client_secret: clientSecret,
     v: '20170801'
   };
 
@@ -94,6 +94,7 @@ function getPhoto(venueID, callback){
 function parseCoffeeShopList(dataText){
   //console.log('handleCoffeeShop');
   var data = JSON.parse(dataText);
+  console.log(data);
   var coffeShopList = [];
   if(!data) return false;
   if(!data.response) return false;
@@ -103,34 +104,44 @@ function parseCoffeeShopList(dataText){
 
   var list = data.response.groups[0].items;
   //console.log(list);
+  //if(list[i].venue.location.distance <= distance && list[i].venue.hour.isOpen){
   for(var i=0; i<list.length; i++){
-    coffeShopList.push({
-      id: list[i].venue.id,
-      distance: list[i].venue.location.distance,
-      name: list[i].venue.name,
-      photos: list[i].venue.photos,
-      priceTear: (list[i].venue.price) ? list[i].venue.price.tier : 0
-    });
+    if(list[i].venue.location.distance <= distance){
+      coffeShopList.push({
+        id: list[i].venue.id,
+        distance: list[i].venue.location.distance,
+        name: list[i].venue.name,
+        photos: list[i].venue.photos,
+        priceTear: (list[i].venue.price) ? list[i].venue.price.tier : 0
+      });
+    }
 
   }
   return coffeShopList;
 }
 
-function renderCoffeShops(){
+function renderCoffeShops(sortBy){
   coffeShops.sort(function(a, b){
-      return a.distance - b.distance;
+      if(sortBy === 'price'){
+        return a.priceTear - b.priceTear;
+      }
+      else{
+        return a.distance - b.distance;
+      }
   });
   console.log(coffeShops);
 
-  //JSON to HTML
-  var coffeetable = document.getElementById("coffeetable")
-  for(var i=0;i<coffeShops.length;i++){
-    getPhoto(coffeShops[i].id, function(err, img){
-      console.log(img);
-      var imag = document.getElementById(img.id);
-      imag.src = img.url;
+  coffeShops = coffeShops.splice(0,10);
 
-    });
+  //JSON to HTML
+  var coffeetable = document.getElementById("coffeetable");
+  coffeetable.innerHTML = "";
+  for(var i=0;i<coffeShops.length;i++){
+    // getPhoto(coffeShops[i].id, function(err, img){
+    //   console.log(img);
+    //   var imag = document.getElementById(img.id);
+    //   imag.src = img.url;
+    // });
 
     var tablerow = document.createElement('tr');
 
@@ -143,11 +154,11 @@ function renderCoffeShops(){
     tablerow.append(colName);
 
     var colDistance = document.createElement('td');
-    colDistance.innerHTML = coffeShops[i].distance;
+    colDistance.innerHTML = coffeShops[i].distance + ' m';
     tablerow.append(colDistance);
 
     var colDetails = document.createElement('td');
-    colDetails.innerHTML = '<a class="btn btn-default btn-xs" href="#" role="button">Link</a>'
+    colDetails.innerHTML = '<a class="btn btn-default btn-xs" href="./details.html?id=' + coffeShops[i].id + '" role="button">More information</a>'
     tablerow.append(colDetails);
 
     coffeetable.append(tablerow);
@@ -167,4 +178,15 @@ function serializeObjects(data){
   }
   return urlParams;
 
+}
+
+function onSortClick(sortBy){
+  sort = sortBy;
+  handleCoffeeShops();
+}
+
+function onSetDistance(){
+  distance = document.getElementById('maxdistance').value;
+  console.log(distance);
+  handleCoffeeShops();
 }
