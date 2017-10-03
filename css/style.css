@@ -1,0 +1,44 @@
+.jumbotron{
+	background-image: url(../img/1.jpg);
+	background-size: cover;
+	height: 100%;
+}
+
+.jumbotextstyle{
+	font-size: 400%;
+	color: white;
+	/*text-shadow: 4px 4px black;*/
+}
+
+@media (min-width:1024px) {
+	.jumbotextstyle{
+		font-size: 500%;
+		margin-top: 150px;
+		margin-bottom: 150px;
+	}
+}
+
+.howItWorksTitle{
+	font-size: 250%;
+	text-align: center;
+}
+
+/*.hrlinestyle{
+	color:red;
+}*/
+
+.howItWorksText{
+	font-size: 150%;
+	text-align: center;
+}
+
+/* Coffee page */
+.coffeTitle{
+	text-align: center;
+	font-size: 250%;
+}
+
+.coffeSortBy{
+	text-align: center;
+	font-size: 150%;
+}
