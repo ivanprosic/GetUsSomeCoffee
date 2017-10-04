@@ -27,7 +27,11 @@ function getLocation(callback) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function(position) {callback(null, position.coords.latitude, position.coords.longitude)},
-          function() {callback('User denied access to location.')}
+          function() {
+            callback('User denied access to location.');
+            console.log("User denied access to location.");
+            alert("Please enable location.");
+          }
         );
     } else {
         callback('GetLocation not supported');
@@ -104,6 +108,7 @@ function parseCoffeeShopList(dataText){
 
   var list = data.response.groups[0].items;
   //console.log(list);
+  //Prikazi radnje koje rade
   //if(list[i].venue.location.distance <= distance && list[i].venue.hour.isOpen){
   for(var i=0; i<list.length; i++){
     if(list[i].venue.location.distance <= distance){
@@ -137,15 +142,16 @@ function renderCoffeShops(sortBy){
   var coffeetable = document.getElementById("coffeetable");
   coffeetable.innerHTML = "";
   for(var i=0;i<coffeShops.length;i++){
-    // getPhoto(coffeShops[i].id, function(err, img){
-    //   console.log(img);
-    //   var imag = document.getElementById(img.id);
-    //   imag.src = img.url;
-    // });
+    getPhoto(coffeShops[i].id, function(err, img){
+      console.log(img);
+      var imag = document.getElementById(img.id);
+      imag.src = img.url;
+    });
 
     var tablerow = document.createElement('tr');
 
     var colPicture = document.createElement('td');
+    colPicture.style.width = '10%';
     colPicture.innerHTML = '<img src="" id="' + coffeShops[i].id + '">';
     tablerow.append(colPicture);
 
@@ -158,7 +164,7 @@ function renderCoffeShops(sortBy){
     tablerow.append(colDistance);
 
     var colDetails = document.createElement('td');
-    colDetails.innerHTML = '<a class="btn btn-default btn-xs" href="./details.html?id=' + coffeShops[i].id + '" role="button">More information</a>'
+    colDetails.innerHTML = '<a class="btn btn-default" href="./details.html?id=' + coffeShops[i].id + '&distance=' + coffeShops[i].distance + '" role="button">More information</a>'
     tablerow.append(colDetails);
 
     coffeetable.append(tablerow);
